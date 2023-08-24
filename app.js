@@ -7,7 +7,7 @@ var connection = mysql.createConnection({
   host     : 'aulascefet.c8tuthxylqic.sa-east-1.rds.amazonaws.com',
   user     : 'aluno',
   password : 'alunoc3f3t',
-  database : 'aula_web'
+  database : 'aulas_web'
 });
 
 connection.connect();
