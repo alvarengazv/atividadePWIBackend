@@ -3,6 +3,9 @@ const app = express()
 const mysql = require('mysql2');
 const port = 3005
 const moment = require('moment');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 var connection = mysql.createConnection({
   host     : 'aulascefet.c8tuthxylqic.sa-east-1.rds.amazonaws.com',
@@ -38,17 +41,41 @@ app.get('/clientes/:id_cliente', function(req, res, next) {
   );
 });
 
-app.post('/clientes', function(req, res, next) {
-  var sql = `insert into cliente(nome, sobrenome,` +
-  `email, data_cadastro, salario) values ("Guilherme", "Alvarenga", ` +
-  `"gui@gmail.com", "${moment().format("YYYY-MM-DD")}", 5000)`
+app.get('/clientes_email/:email', function(req, res, next) {
+  var email = req.params['email'];
+  var sql =  `select * from cliente where email = "${email}"`;
+  console.log(sql)
   connection.query(
-    sql, (erro, resultados, fields) => {
-      if(erro)
-        res.send(erro)
-      res.send(resultados)
+    sql,
+    (err, results, fields) => {
+      if(err) 
+        console.log(err)
+      console.log(results)
+      if(results.length > 0)
+        res.send({existe: true})
+      else 
+        res.send({existe: false})
     }
-  )
+  );
+});
+
+app.post('/clientes', function(req, res, next) {
+  var nome = req.body.nome;
+  var sobrenome = req.body.sobrenome;
+  var email = req.body.email;
+  var salario = +req.body.salario;
+  var sql = `insert into cliente(nome, sobrenome,` +
+  `email, data_cadastro, salario) values ("${nome}", "${sobrenome}", ` +
+  `"${email}", "${moment().format("YYYY-MM-DD")}", ${salario})`
+  // if(nome != undefined && sobrenome != undefined && email != undefined && salario != undefined){
+    connection.query(
+      sql, (erro, resultados, fields) => {
+        if(erro)
+          res.send(erro)
+        res.send(resultados)
+      }
+    )
+  // }
 });
 
 app.post('/clientes_del/:id_cliente', function(req, res, next) {
@@ -63,10 +90,15 @@ app.post('/clientes_del/:id_cliente', function(req, res, next) {
   );
 });
 
-app.patch('/clientes', function(req, res, next) {
+app.patch('/clientes/:id_cliente', function(req, res, next) {
+  var nome = req.body.nome;
+  var sobrenome = req.body.sobrenome;
+  var email = req.body.email;
+  var salario = +req.body.salario;
+  var idCliente = +req.params.id_cliente;
   var sql = `
-  update cliente set nome = "Rafael", sobrenome = "Azevedo", ` +
-  `email = "rafa@gmail.com", salario = 7000 where id_cliente = 1005`
+  update cliente set nome = "${nome}", sobrenome = "${sobrenome}", ` +
+  `email = "${email}", salario = ${salario} where id_cliente = ${idCliente}`
   connection.query(
     sql, (erro, resultados, fields) => {
       if(erro)
