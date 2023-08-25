@@ -10,8 +10,6 @@ var connection = mysql.createConnection({
   database : 'aulas_web'
 });
 
-connection.connect();
-
 app.get('/', function(req, res, next) {
   res.send("Backend Guilherme Alvarenga de Azevedo Rodando...");
 });
