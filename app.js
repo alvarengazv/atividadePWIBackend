@@ -24,6 +24,17 @@ app.get('/cliente', function(req, res, next) {
   );
 });
 
+app.get('/cliente/:id_cliente?', function(req, res, next) {
+  var idCliente = req.params['id_cliente'];
+  connection.query(
+    `select * from cliente WHERE id_cliente = ${+idCliente}`,
+    (err, results, fields) => {
+      if(err) console.log(err)
+      res.send(results)
+    }
+  );
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
