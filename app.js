@@ -3,9 +3,17 @@ const app = express()
 const port = 3005;
 const bodyParser = require('body-parser');
 const formData = require('express-form-data');
+const cors = require('cors');
+
+corsOptions = {
+  origin: "http://127.0.0.1:5501",
+  optionsSuccessStatus: 200
+}
 
 app.use(formData.parse());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors(corsOptions));
+
 
 // MONTANDO MINHAS ROTAS
 require("./routes/clientes")(app)
