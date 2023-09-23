@@ -1,8 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const moment = require('moment');
-const { mkdirp } = require('mkdirp')
 const db = require("../config/database");
+const { mkdirp } = require('mkdirp');
 
 module.exports = (app) => {
     const rotas = express.Router();
@@ -60,10 +60,10 @@ module.exports = (app) => {
         var email = req.body.email;
         var salario = +req.body.salario;
 
-        console.log(req.files)
+        console.log(req)
 
         var sql = `insert into cliente(nome, sobrenome,` +
-            `email, data_cadastro, salario) values ("${nome}", "${sobrenome}", ` +
+            ` email, data_cadastro, salario) values ("${nome}", "${sobrenome}", ` +
             `"${email}", "${moment().format("YYYY-MM-DD")}", ${salario})`
 
         db.query(
@@ -71,18 +71,21 @@ module.exports = (app) => {
                 if (erro)
                     res.send(erro)
 
-                var path = '/uploads/clientes';
+                var path = './uploads/clientes';
 
-                const made = mkdirp.sync(path)
-
-                var caminhoTemp = req.files.avatar.path;
-                var type = req.files.avatar.type.split('/');
-                var caminhoNovo = `./uploads/clientes/cliente${resultados.insertId}.${type[type.length - 1]}`;
-
-                fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                mkdirp(path).then(made => {
+                    console.log(made)
+                    var caminhoTemp = req.files.avatar.path;
+                    var type = req.files.avatar.type.split('/');
+                    var caminhoNovo = `${path}/C${resultados.insertId}.${type[type.length - 1]}`;
+    
+                    fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                        console.log(err)
+                        res.send(resultados)
+                    });
+                }).catch(err => {
                     console.log(err)
-                    res.send(resultados)
-                });
+                });                
             }
         )
     });
@@ -106,13 +109,28 @@ module.exports = (app) => {
         var salario = +req.body.salario;
         var idCliente = +req.params.id_cliente;
         var sql = `
-    update cliente set nome = "${nome}", sobrenome = "${sobrenome}", ` +
+            update cliente set nome = "${nome}", sobrenome = "${sobrenome}", ` +
             `email = "${email}", salario = ${salario} where id_cliente = ${idCliente}`
         db.query(
             sql, (erro, resultados, fields) => {
                 if (erro)
                     res.send(erro)
-                res.send(resultados)
+
+                var path = './uploads/clientes';
+
+                mkdirp(path).then(made => {
+                    console.log(made)
+                    var caminhoTemp = req.files.avatar.path;
+                    var type = req.files.avatar.type.split('/');
+                    var caminhoNovo = `${path}/C${idCliente}.${type[type.length - 1]}`;
+    
+                    fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                        console.log(err)
+                        res.send(resultados)
+                    });
+                }).catch(err => {
+                    console.log(err)
+                });
             }
         )
     });

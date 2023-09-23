@@ -57,18 +57,21 @@ module.exports = (app) => {
                 sql, (erro, resultados, fields) => {
                     if (erro)
                         res.send(erro)
-      
-                    var path = '/uploads/fornecedores';
+                    
+                    var path = './uploads/fornecedores';
 
-                    const made = mkdirp.sync(path)
-      
-                    var caminhoTemp = req.files.logomarca.path;
-                    var type = req.files.logomarca.type.split('/');
-                    var caminhoNovo = `./uploads/fornecedores/F${resultados.insertId}.${type[type.length - 1]}`;
-
-                    fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                    mkdirp(path).then(made => {
+                        console.log(made)
+                        var caminhoTemp = req.files.avatar.path;
+                        var type = req.files.avatar.type.split('/');
+                        var caminhoNovo = `${path}/F${resultados.insertId}.${type[type.length - 1]}`;
+        
+                        fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                            console.log(err)
+                            res.send(resultados)
+                        });
+                    }).catch(err => {
                         console.log(err)
-                        res.send(resultados)
                     });
                 }
             )
@@ -112,20 +115,21 @@ module.exports = (app) => {
                 sql, (erro, resultados, fields) => {
                     if (erro)
                         res.send(erro)
-      
-                    var path = '/uploads/fornecedores';
+                    
+                    var path = './uploads/fornecedores';
 
-                    const made = mkdirp.sync(path)
-
-                    console.log(made)
-      
-                    var caminhoTemp = req.files.logomarca.path;
-                    var type = req.files.logomarca.type.split('/');
-                    var caminhoNovo = `./uploads/fornecedores/F${idFornecedor}.${type[type.length - 1]}`;
-
-                    fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                    mkdirp(path).then(made => {
+                        console.log(made)
+                        var caminhoTemp = req.files.avatar.path;
+                        var type = req.files.avatar.type.split('/');
+                        var caminhoNovo = `${path}/F${idFornecedor}.${type[type.length - 1]}`;
+        
+                        fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                            console.log(err)
+                            res.send(resultados)
+                        });
+                    }).catch(err => {
                         console.log(err)
-                        res.send(resultados)
                     });
                 }
             )
