@@ -13,7 +13,7 @@ module.exports = (app) => {
         res.send("NOVA ROTA PARA CLIENTES");
     })
 
-    rotas.get('/clientes', function (req, res, next) {
+    rotas.get('/clientes_all', function (req, res, next) {
         db.query(
             'select * from cliente',
             (err, results, fields) => {
@@ -24,14 +24,24 @@ module.exports = (app) => {
         );
     });
 
-    rotas.get('/clientes/:id_cliente', function (req, res, next) {
+    rotas.get('/clientes_byId/:id_cliente', function (req, res, next) {
+        console.log("TESTE:" + req.params['id_cliente']);
         var idCliente = req.params['id_cliente'];
         db.query(
             `select * from cliente where id_cliente = ${+idCliente}`,
             (err, results, fields) => {
                 if (err)
                     console.log(err)
-                res.send(results)
+                console.log(results)
+                var resultado = {};
+                resultado.id_cliente = results[0].id_cliente;
+                resultado.nome = results[0].nome;
+                resultado.sobrenome = results[0].sobrenome;
+                resultado.email = results[0].email;
+                resultado.salario = results[0].salario;
+                resultado.data_cadastro = moment(results[0].data_cadastro).format("DD/MM/YYYY");
+
+                res.send(resultado);
             }
         );
     });

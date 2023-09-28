@@ -13,7 +13,7 @@ corsOptions = {
 app.use(formData.parse());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors(corsOptions));
-
+app.use(express.static('uploads'));
 
 // MONTANDO MINHAS ROTAS
 require("./routes/clientes")(app)
