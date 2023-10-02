@@ -25,14 +25,12 @@ module.exports = (app) => {
     });
 
     rotas.get('/clientes_byId/:id_cliente', function (req, res, next) {
-        console.log("TESTE:" + req.params['id_cliente']);
         var idCliente = req.params['id_cliente'];
         db.query(
             `select * from cliente where id_cliente = ${+idCliente}`,
             (err, results, fields) => {
                 if (err)
                     console.log(err)
-                console.log(results)
                 var resultado = {};
                 resultado.id_cliente = results[0].id_cliente;
                 resultado.nome = results[0].nome;
@@ -49,13 +47,11 @@ module.exports = (app) => {
     rotas.get('/clientes_email/:email', function (req, res, next) {
         var email = req.params['email'];
         var sql = `select * from cliente where email = "${email}"`;
-        console.log(sql)
         db.query(
             sql,
             (err, results, fields) => {
                 if (err)
                     console.log(err)
-                console.log(results)
                 if (results.length > 0)
                     res.send({ existe: true })
                 else
@@ -70,8 +66,6 @@ module.exports = (app) => {
         var email = req.body.email;
         var salario = +req.body.salario;
 
-        console.log(req)
-
         var sql = `insert into cliente(nome, sobrenome,` +
             ` email, data_cadastro, salario) values ("${nome}", "${sobrenome}", ` +
             `"${email}", "${moment().format("YYYY-MM-DD")}", ${salario})`
@@ -83,19 +77,21 @@ module.exports = (app) => {
 
                 var path = './uploads/clientes';
 
-                mkdirp(path).then(made => {
-                    console.log(made)
-                    var caminhoTemp = req.files.avatar.path;
-                    var type = req.files.avatar.type.split('/');
-                    var caminhoNovo = `${path}/C${resultados.insertId}.${type[type.length - 1]}`;
-    
-                    fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                if(Object.keys(req.files).length > 0){
+                    mkdirp(path).then(made => {
+                        var caminhoTemp = req.files.avatar.path;
+                        var type = req.files.avatar.type.split('/');
+                        var caminhoNovo = `${path}/C${resultados.insertId}.${type[type.length - 1]}`;
+        
+                        fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                            res.send(resultados)
+                        });
+                    }).catch(err => {
                         console.log(err)
-                        res.send(resultados)
                     });
-                }).catch(err => {
-                    console.log(err)
-                });                
+                } else {
+                    res.send(resultados)
+                }             
             }
         )
     });
@@ -116,31 +112,35 @@ module.exports = (app) => {
         var nome = req.body.nome;
         var sobrenome = req.body.sobrenome;
         var email = req.body.email;
-        var salario = +req.body.salario;
+        var salario = req.body.salario;
         var idCliente = +req.params.id_cliente;
+
         var sql = `
             update cliente set nome = "${nome}", sobrenome = "${sobrenome}", ` +
             `email = "${email}", salario = ${salario} where id_cliente = ${idCliente}`
         db.query(
             sql, (erro, resultados, fields) => {
-                if (erro)
+                if (erro){
+                    console.log(erro)
                     res.send(erro)
-
+                }
                 var path = './uploads/clientes';
 
-                mkdirp(path).then(made => {
-                    console.log(made)
-                    var caminhoTemp = req.files.avatar.path;
-                    var type = req.files.avatar.type.split('/');
-                    var caminhoNovo = `${path}/C${idCliente}.${type[type.length - 1]}`;
-    
-                    fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                if(Object.keys(req.files).length > 0){
+                    mkdirp(path).then(made => {
+                        var caminhoTemp = req.files.avatar.path;
+                        var type = req.files.avatar.type.split('/');
+                        var caminhoNovo = `${path}/C${idCliente}.${type[type.length - 1]}`;
+        
+                        fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                            res.send(resultados)
+                        });
+                    }).catch(err => {
                         console.log(err)
-                        res.send(resultados)
                     });
-                }).catch(err => {
-                    console.log(err)
-                });
+                } else {
+                    res.send(resultados)
+                }
             }
         )
     });
