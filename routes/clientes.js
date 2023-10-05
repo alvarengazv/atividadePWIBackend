@@ -103,9 +103,12 @@ module.exports = (app) => {
             (err, results, fields) => {
                 if (err)
                     console.log(err)
-                fs.unlink(`./uploads/clientes/C${idFornecedor}.jpeg`, (err) => {
-                    console.log(err)
-                })
+                var path = `./uploads/clientes/C${idCliente}.jpeg`;
+                if (fs.existsSync(path)) {
+                    fs.unlink(path, (err) => {
+                        console.log(err)
+                    })
+                }
                 res.send(results)
             }
         );
