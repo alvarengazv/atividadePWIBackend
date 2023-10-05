@@ -12,7 +12,7 @@ module.exports = (app) => {
         res.send("NOVA ROTA PARA FORNECEDORES");
     })
 
-    app.get('/fornecedores', function (req, res, next) {
+    app.get('/fornecedores_all', function (req, res, next) {
         db.query(
             'select * from fornecedor',
             (err, results, fields) => {
@@ -23,14 +23,23 @@ module.exports = (app) => {
         );
       });
       
-      app.get('/fornecedores/:id_fornecedor', function (req, res, next) {
+      app.get('/fornecedores_byId/:id_fornecedor', function (req, res, next) {
         var idFornecedor = req.params['id_fornecedor'];
         db.query(
             `select * from fornecedor where id_fornecedor = ${+idFornecedor}`,
             (err, results, fields) => {
                 if (err)
                     console.log(err)
-                res.send(results)
+                var resultado = {};
+                resultado.id_fornecedor = results[0].id_fornecedor;
+                resultado.razao = results[0].razao;
+                resultado.cpf_cnpj = results[0].cpf_cnpj;
+                resultado.contato = results[0].contato;
+                resultado.logradouro = results[0].logradouro;
+                resultado.cidade = results[0].cidade;
+                resultado.uf = results[0].uf;
+
+                res.send(resultado)
             }
         );
       });
@@ -60,19 +69,21 @@ module.exports = (app) => {
                     
                     var path = './uploads/fornecedores';
 
-                    mkdirp(path).then(made => {
-                        console.log(made)
-                        var caminhoTemp = req.files.avatar.path;
-                        var type = req.files.avatar.type.split('/');
-                        var caminhoNovo = `${path}/F${resultados.insertId}.${type[type.length - 1]}`;
-        
-                        fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                    if(Object.keys(req.files).length > 0){
+                        mkdirp(path).then(made => {
+                            var caminhoTemp = req.files.avatar.path;
+                            var type = req.files.avatar.type.split('/');
+                            var caminhoNovo = `${path}/F${resultados.insertId}.${type[type.length - 1]}`;
+            
+                            fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                                res.send(resultados)
+                            });
+                        }).catch(err => {
                             console.log(err)
-                            res.send(resultados)
                         });
-                    }).catch(err => {
-                        console.log(err)
-                    });
+                    } else {
+                        res.send(resultados)
+                    }
                 }
             )
         } else {
@@ -88,12 +99,15 @@ module.exports = (app) => {
             (err, results, fields) => {
                 if (err)
                     console.log(err)
+                fs.unlink(`./uploads/fornecedores/F${idFornecedor}.jpeg`, (err) => {
+                    console.log(err)
+                })
                 res.send(results)
             }
         );
       });
       
-      app.post('/fornecedores/:id_fornecedor', function (req, res, next) {
+      app.patch('/fornecedores/:id_fornecedor', function (req, res, next) {
         var razao = req.body.razao;
         var cpf_cnpj = req.body.cpf_cnpj;
         var contato = req.body.contato;
@@ -118,19 +132,21 @@ module.exports = (app) => {
                     
                     var path = './uploads/fornecedores';
 
-                    mkdirp(path).then(made => {
-                        console.log(made)
-                        var caminhoTemp = req.files.avatar.path;
-                        var type = req.files.avatar.type.split('/');
-                        var caminhoNovo = `${path}/F${idFornecedor}.${type[type.length - 1]}`;
-        
-                        fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                    if(Object.keys(req.files).length > 0){
+                        mkdirp(path).then(made => {
+                            var caminhoTemp = req.files.avatar.path;
+                            var type = req.files.avatar.type.split('/');
+                            var caminhoNovo = `${path}/F${idFornecedor}.${type[type.length - 1]}`;
+            
+                            fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
+                                res.send(resultados)
+                            });
+                        }).catch(err => {
                             console.log(err)
-                            res.send(resultados)
                         });
-                    }).catch(err => {
-                        console.log(err)
-                    });
+                    } else {
+                        res.send(resultados)
+                    }
                 }
             )
           } else {

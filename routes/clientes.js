@@ -103,6 +103,9 @@ module.exports = (app) => {
             (err, results, fields) => {
                 if (err)
                     console.log(err)
+                fs.unlink(`./uploads/clientes/C${idFornecedor}.jpeg`, (err) => {
+                    console.log(err)
+                })
                 res.send(results)
             }
         );
