@@ -6,7 +6,7 @@ const formData = require('express-form-data');
 const cors = require('cors');
 
 corsOptions = {
-  origin: "http://127.0.0.1:5501",
+  origin: "http://localhost:5501",
   optionsSuccessStatus: 200
 }
 
