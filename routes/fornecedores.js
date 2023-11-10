@@ -73,7 +73,7 @@ module.exports = (app) => {
                         mkdirp(path).then(made => {
                             var caminhoTemp = req.files.avatar.path;
                             var type = req.files.avatar.type.split('/');
-                            var caminhoNovo = `${path}/F${resultados.insertId}.${type[type.length - 1]}`;
+                            var caminhoNovo = `${path}/F${resultados.insertId}.jpeg`;
             
                             fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
                                 res.send(resultados)
@@ -139,7 +139,7 @@ module.exports = (app) => {
                         mkdirp(path).then(made => {
                             var caminhoTemp = req.files.avatar.path;
                             var type = req.files.avatar.type.split('/');
-                            var caminhoNovo = `${path}/F${idFornecedor}.${type[type.length - 1]}`;
+                            var caminhoNovo = `${path}/F${idFornecedor}.jpeg`;
             
                             fs.copyFile(caminhoTemp, caminhoNovo, (err) => {
                                 res.send(resultados)
